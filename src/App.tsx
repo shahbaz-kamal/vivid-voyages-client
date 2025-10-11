@@ -1,4 +1,4 @@
-import CommonLayout from "./components/ui/layouts/CommonLayout";
+import CommonLayout from "./components/layouts/CommonLayout";
 
 import { Outlet } from "react-router";
 
