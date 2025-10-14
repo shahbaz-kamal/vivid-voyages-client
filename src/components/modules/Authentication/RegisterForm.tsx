@@ -8,6 +8,8 @@ import { Link } from "react-router";
 import {z} from "zod"
 import {zodResolver} from "@hookform/resolvers/zod"
 import Password from "@/components/ui/Password";
+import { useRegisterMutation } from "@/redux/features/auth/auth.api";
+import { toast } from "sonner";
 
 const registerSchema=z.object({
     name: z
@@ -33,6 +35,9 @@ export function RegisterForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
+
+const [register,{data,error,isLoading}]=useRegisterMutation()
+
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver:zodResolver(registerSchema),
     defaultValues:{
@@ -42,8 +47,21 @@ export function RegisterForm({
         confirmPassword:""
     }
   });
-  const onSubmit = (data:z.infer<typeof registerSchema>) => {
+  const onSubmit =async (data:z.infer<typeof registerSchema>) => {
+  try {
     console.log(data);
+    const userInfo={
+      name:data.name,
+      email:data.email,
+      password:data.password
+    }
+   const result=await register(userInfo).unwrap()
+   toast.success(result.message)
+   console.log(result)
+  } catch (error) {
+    console.error(error)
+  }
+
   };
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
