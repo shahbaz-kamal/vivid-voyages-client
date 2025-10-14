@@ -2,11 +2,12 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 import { Input } from "@/components/ui/input";
-import { useForm, type FieldValue, type FieldValues, type SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Link } from "react-router";
 import {z} from "zod"
 import {zodResolver} from "@hookform/resolvers/zod"
+import Password from "@/components/ui/Password";
 
 const registerSchema=z.object({
     name: z
@@ -98,9 +99,9 @@ export function RegisterForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Password</FormLabel>
-                {/* <FormControl>
+                <FormControl>
                   <Password {...field} />
-                </FormControl> */}
+                </FormControl>
                 <FormDescription className="sr-only">
                   This is your public display name.
                 </FormDescription>
@@ -114,9 +115,9 @@ export function RegisterForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Confirm Password</FormLabel>
-                {/* <FormControl>
+                <FormControl>
                   <Password {...field} />
-                </FormControl> */}
+                </FormControl>
                 <FormDescription className="sr-only">
                   This is your public display name.
                 </FormDescription>
