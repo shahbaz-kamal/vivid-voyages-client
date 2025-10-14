@@ -50,15 +50,18 @@ const navigate=useNavigate()
         password: data.password,
       };
       const result = await login(userInfo).unwrap();
-      if(result.status===401){
-        toast.error("Your account is not verified")
-        return
-      }
+     
       toast.success(result.message);
        navigate("/verify")
       console.log(result);
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error:any) {
       console.error(error);
+      if(error.status===401 && error?.data?.message==="User is not Verified"){
+        toast.error("Your account is not verified")
+        navigate("/verify",{state:data.email})
+        return
+      }
     }
   };
   return (
