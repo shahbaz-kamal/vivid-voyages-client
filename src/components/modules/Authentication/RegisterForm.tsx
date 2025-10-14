@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import {z} from "zod"
 import {zodResolver} from "@hookform/resolvers/zod"
 import Password from "@/components/ui/Password";
@@ -37,6 +37,7 @@ export function RegisterForm({
 }: React.ComponentProps<"form">) {
 
 const [register,{data,error,isLoading}]=useRegisterMutation()
+const navigate=useNavigate()
 
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver:zodResolver(registerSchema),
@@ -57,6 +58,7 @@ const [register,{data,error,isLoading}]=useRegisterMutation()
     }
    const result=await register(userInfo).unwrap()
    toast.success(result.message)
+   navigate("/verify")
    console.log(result)
   } catch (error) {
     console.error(error)
