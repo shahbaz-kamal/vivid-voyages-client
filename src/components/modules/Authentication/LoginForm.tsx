@@ -16,16 +16,12 @@ import { Link, useNavigate } from "react-router";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Password from "@/components/ui/Password";
-import {
-  useLoginMutation,
- 
-} from "@/redux/features/auth/auth.api";
+import { useLoginMutation } from "@/redux/features/auth/auth.api";
 import { toast } from "sonner";
 
 const loginSchema = z.object({
   email: z.email(),
   password: z.string().min(6, { error: "Password is too short" }),
-  
 });
 
 export function LoginForm({
@@ -33,7 +29,7 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"form">) {
   const [login, { data, error, isLoading }] = useLoginMutation();
-const navigate=useNavigate()
+  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -50,17 +46,21 @@ const navigate=useNavigate()
         password: data.password,
       };
       const result = await login(userInfo).unwrap();
-     
-      toast.success(result.message);
-       navigate("/verify")
+toast.success(result.message);
       console.log(result);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error:any) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
       console.error(error);
-      if(error.status===401 && error?.data?.message==="User is not Verified"){
-        toast.error("Your account is not verified")
-        navigate("/verify",{state:data.email})
-        return
+      if (error.data.message === "Incorrect password") {
+        toast.error("Invalid Credential");
+      }
+      if (
+        error.status === 401 &&
+        error?.data?.message === "User is not Verified"
+      ) {
+        toast.error("Your account is not verified");
+        navigate("/verify", { state: data.email });
+        return;
       }
     }
   };
@@ -135,9 +135,9 @@ const navigate=useNavigate()
       </div>
 
       <div className="text-center text-sm">
-        Already have an account?{" "}
-        <Link to="/login" className="underline underline-offset-4">
-          Login
+        Don't have an account?{" "}
+        <Link to="/register" className="underline underline-offset-4">
+          Register
         </Link>
       </div>
     </div>

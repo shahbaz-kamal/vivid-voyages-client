@@ -22,7 +22,10 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { useSendOtpMutation } from "@/redux/features/auth/auth.api";
+import {
+  useSendOtpMutation,
+  useVerifyOtpMutation,
+} from "@/redux/features/auth/auth.api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Dot } from "lucide-react";
 import React, { useEffect, useState } from "react";
@@ -39,7 +42,9 @@ const formSchema = z.object({
 
 const Verify = () => {
   const [confirmed, setConfirmed] = useState(false);
-  const [sendOtp]=useSendOtpMutation()
+  const [timer,setTimer]=useState(120)
+  const [sendOtp] = useSendOtpMutation();
+  const [verifyOtp] = useVerifyOtpMutation();
   const location = useLocation();
   const navigate = useNavigate();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -55,23 +60,43 @@ const Verify = () => {
   //   if (!email) navigate("/");
   // }, [email]);
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
+  useEffect(()=>{
+const timerId=setInterval(()=>{
+  if(email && confirmed){
+    setTimer(prev=>prev-1)
+  }
+},1000)
+  },[email,confirmed])
+
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    const toastId = toast.loading("Sending OTP");
+    const userInfo = {
+      email: email,
+      otp: data.pin,
+    };
+    try {
+      const res = await verifyOtp(userInfo).unwrap();
+      if (res.success) {
+        toast.success("OTP Verified", { id: toastId });
+      }
+    } catch (error) {
+      console.log(error);
+    }
     console.log(data);
-  
   };
 
-
-  const handleConfirm=async()=>{
- try {
-
- const res=await sendOtp({email}).unwrap()
-if(res.success)  toast.success("OTP Sent")
-  setConfirmed(true)
-
- } catch (error) {
-  console.log(error)
- }
-  }
+  const handleConfirm = async () => {
+    const toastId = toast.loading("Sending OTP");
+    try {
+      const res = await sendOtp({ email }).unwrap();
+      if (res.success) {
+        toast.success("OTP Sent", { id: toastId });
+        setConfirmed(true);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className="grid place-content-center h-screen">
       {confirmed ? (
@@ -96,7 +121,6 @@ if(res.success)  toast.success("OTP Sent")
                           <InputOTPGroup>
                             <InputOTPSlot index={0} />
                           </InputOTPGroup>
-
                           <InputOTPGroup>
                             <InputOTPSlot index={1} />
                           </InputOTPGroup>
@@ -115,7 +139,10 @@ if(res.success)  toast.success("OTP Sent")
                           </InputOTPGroup>
                         </InputOTP>
                       </FormControl>
-
+                      <FormDescription>
+                        <Button variant="link">Resend OTP</Button>
+                        {timer}
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -136,7 +163,9 @@ if(res.success)  toast.success("OTP Sent")
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={handleConfirm} className="w-[300px]">Send</Button>
+            <Button onClick={handleConfirm} className="w-[300px]">
+              Send
+            </Button>
           </CardContent>
         </Card>
       )}
