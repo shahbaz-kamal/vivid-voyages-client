@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/popover";
 import { ModeToggle } from "./ModeToggler";
 import { Link, NavLink } from "react-router";
+import { authApi, useLogoutMutation, useUserInfoQuery } from "@/redux/features/auth/auth.api";
+import { useAppDispatch } from "@/redux/hook";
 
 // Navigation links array to be used in both desktop and mobile menus
 const navigationLinks = [
@@ -21,6 +23,17 @@ const navigationLinks = [
 ];
 
 export default function Navbar() {
+  const { data } = useUserInfoQuery(undefined);
+  console.log(data);
+const [logout]=useLogoutMutation()
+const dispatch=useAppDispatch()
+
+
+  const handleLogout=()=>{
+    logout(undefined)
+    dispatch(authApi.util.resetApiState())
+  }
+
   return (
     <header className="border-b  ">
       <div className=" container mx-auto flex h-16 items-center justify-between gap-4 px-4 md:px-6">
@@ -85,7 +98,10 @@ export default function Navbar() {
               <NavigationMenuList className="gap-2">
                 {navigationLinks.map((link, index) => (
                   <NavigationMenuItem key={index}>
-                    <NavigationMenuLink asChild className="py-1.5 font-medium text-muted-foreground hover:text-primary">
+                    <NavigationMenuLink
+                      asChild
+                      className="py-1.5 font-medium text-muted-foreground hover:text-primary"
+                    >
                       <Link to={link.href}> {link.label}</Link>
                     </NavigationMenuLink>
                   </NavigationMenuItem>
@@ -96,13 +112,18 @@ export default function Navbar() {
         </div>
         {/* Right side */}
         <div className="flex items-center gap-2">
-          <Button asChild variant="ghost" size="sm" className="text-sm">
+          {/* <Button asChild variant="ghost" size="sm" className="text-sm">
             <a href="#">Sign In</a>
-          </Button>
+          </Button> */}
           <ModeToggle></ModeToggle>
-          <Button asChild  className="text-sm">
-           <Link to="/login">Login</Link>
-          </Button>
+          {data?.data?.email && <Button onClick={handleLogout} className="text-sm" variant="outline">
+            Log out
+          </Button> }
+          {!data?.data?.email &&   <Button asChild className="text-sm">
+            <Link to="/login">Login</Link>
+          </Button> }
+          
+        
         </div>
       </div>
     </header>

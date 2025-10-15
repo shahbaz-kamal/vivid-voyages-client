@@ -18,6 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Password from "@/components/ui/Password";
 import { useLoginMutation } from "@/redux/features/auth/auth.api";
 import { toast } from "sonner";
+import { envVars } from "@/config/env";
 
 const loginSchema = z.object({
   email: z.email(),
@@ -125,7 +126,7 @@ toast.success(result.message);
           </span>
         </div>
 
-        <Button
+        <Button onClick={()=>window.open(`${envVars.BASE_URL}/auth/google`)}
           type="button"
           variant="outline"
           className="w-full cursor-pointer"
