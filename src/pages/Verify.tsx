@@ -22,6 +22,7 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { cn } from "@/lib/utils";
 import {
   useSendOtpMutation,
   useVerifyOtpMutation,
@@ -42,7 +43,7 @@ const formSchema = z.object({
 
 const Verify = () => {
   const [confirmed, setConfirmed] = useState(false);
-  const [timer,setTimer]=useState(120)
+  const [timer, setTimer] = useState(5);
   const [sendOtp] = useSendOtpMutation();
   const [verifyOtp] = useVerifyOtpMutation();
   const location = useLocation();
@@ -53,20 +54,22 @@ const Verify = () => {
       pin: "",
     },
   });
-  console.log(location.state);
+  // console.log(location.state);
   const [email] = useState((location.state as string) || "");
 
   // useEffect(() => {
   //   if (!email) navigate("/");
   // }, [email]);
 
-  useEffect(()=>{
-const timerId=setInterval(()=>{
-  if(email && confirmed){
-    setTimer(prev=>prev-1)
-  }
-},1000)
-  },[email,confirmed])
+  useEffect(() => {
+if(!email || !confirmed) return
+
+    const timerId = setInterval(() => {
+      setTimer((prev) => (prev > 0 ? prev - 1 : 0));
+      console.log("Tick")
+    }, 1000);
+    return () => clearInterval(timerId);
+  }, [email, confirmed]);
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     const toastId = toast.loading("Sending OTP");
@@ -85,13 +88,16 @@ const timerId=setInterval(()=>{
     console.log(data);
   };
 
-  const handleConfirm = async () => {
+  const handleSendOtp = async () => {
     const toastId = toast.loading("Sending OTP");
+ 
     try {
       const res = await sendOtp({ email }).unwrap();
       if (res.success) {
         toast.success("OTP Sent", { id: toastId });
         setConfirmed(true);
+     
+        setTimer(5)
       }
     } catch (error) {
       console.log(error);
@@ -140,8 +146,11 @@ const timerId=setInterval(()=>{
                         </InputOTP>
                       </FormControl>
                       <FormDescription>
-                        <Button variant="link">Resend OTP</Button>
-                        {timer}
+                        <Button className={cn("p-0 m-0",{
+                          "cursor-pointer":timer===0,
+                          "text-gray-500":timer!==0
+                        })} disabled={timer !==0} onClick={handleSendOtp} type="button" variant="link">Resend OTP </Button>
+                         { ` ${timer}`}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -163,7 +172,7 @@ const timerId=setInterval(()=>{
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={handleConfirm} className="w-[300px]">
+            <Button onClick={handleSendOtp} className="w-[300px]">
               Send
             </Button>
           </CardContent>
