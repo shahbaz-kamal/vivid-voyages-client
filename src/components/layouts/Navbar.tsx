@@ -29,8 +29,8 @@ const [logout]=useLogoutMutation()
 const dispatch=useAppDispatch()
 
 
-  const handleLogout=()=>{
-    logout(undefined)
+  const handleLogout=async()=>{
+   await logout(undefined)
     dispatch(authApi.util.resetApiState())
   }
 
