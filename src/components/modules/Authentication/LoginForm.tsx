@@ -47,8 +47,13 @@ export function LoginForm({
         password: data.password,
       };
       const result = await login(userInfo).unwrap();
-toast.success(result.message);
       console.log(result);
+      if (result.success) {
+        toast.success("Logged in successfully");
+        navigate("/");
+      }
+
+     
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error(error);
@@ -126,7 +131,8 @@ toast.success(result.message);
           </span>
         </div>
 
-        <Button onClick={()=>window.open(`${envVars.BASE_URL}/auth/google`)}
+        <Button
+          onClick={() => window.open(`${envVars.BASE_URL}/auth/google`)}
           type="button"
           variant="outline"
           className="w-full cursor-pointer"
