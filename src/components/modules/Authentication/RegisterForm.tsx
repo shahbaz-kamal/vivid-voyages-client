@@ -1,24 +1,69 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-  FieldSeparator,
-} from "@/components/ui/field";
+
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import {z} from "zod"
+import {zodResolver} from "@hookform/resolvers/zod"
+import Password from "@/components/ui/Password";
+import { useRegisterMutation } from "@/redux/features/auth/auth.api";
+import { toast } from "sonner";
+
+const registerSchema=z.object({
+    name: z
+      .string()
+      .min(3, {
+        error: "Name is too short",
+      })
+      .max(50),
+    email: z.email(),
+    password: z.string().min(6, { error: "Password is too short" }),
+    confirmPassword: z
+      .string()
+      .min(6, { error: "Confirm Password is too short" }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Password do not match",
+    path: ["confirmPassword"],
+})
+
+
 
 export function RegisterForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
-  const form = useForm();
-  const onSubmit = (data) => {
+
+const [register,{data,error,isLoading}]=useRegisterMutation()
+const navigate=useNavigate()
+
+  const form = useForm<z.infer<typeof registerSchema>>({
+    resolver:zodResolver(registerSchema),
+    defaultValues:{
+        name:"",
+        email:"",
+        password:"",
+        confirmPassword:""
+    }
+  });
+  const onSubmit =async (data:z.infer<typeof registerSchema>) => {
+  try {
     console.log(data);
+    const userInfo={
+      name:data.name,
+      email:data.email,
+      password:data.password
+    }
+   const result=await register(userInfo).unwrap()
+   toast.success(result.message)
+   navigate("/verify")
+   console.log(result)
+  } catch (error) {
+    console.error(error)
+  }
+
   };
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -74,9 +119,9 @@ export function RegisterForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Password</FormLabel>
-                {/* <FormControl>
+                <FormControl>
                   <Password {...field} />
-                </FormControl> */}
+                </FormControl>
                 <FormDescription className="sr-only">
                   This is your public display name.
                 </FormDescription>
@@ -90,9 +135,9 @@ export function RegisterForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Confirm Password</FormLabel>
-                {/* <FormControl>
+                <FormControl>
                   <Password {...field} />
-                </FormControl> */}
+                </FormControl>
                 <FormDescription className="sr-only">
                   This is your public display name.
                 </FormDescription>
