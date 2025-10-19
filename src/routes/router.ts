@@ -11,7 +11,8 @@ import Verify from "@/pages/Verify";
 
 import { createBrowserRouter } from "react-router";
 
-export const router = createBrowserRouter([
+export const router = createBrowserRouter(
+  [
   {
     path: "/",
     Component: App,
