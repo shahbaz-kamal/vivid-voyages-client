@@ -12,9 +12,9 @@ import { generateRoutes } from "@/utils/generateRoutes";
 
 import { createBrowserRouter } from "react-router";
 import { adminSidebarItems } from "./adminSidebarItems";
+import { userSidebarItem } from "./userSidebarItems";
 
-export const router = createBrowserRouter(
-  [
+export const router = createBrowserRouter([
   {
     path: "/",
     Component: App,
@@ -28,14 +28,12 @@ export const router = createBrowserRouter(
   {
     path: "/admin",
     Component: DashboardLayout,
-    children: [
-    ...generateRoutes(adminSidebarItems)
-    ],
+    children: [...generateRoutes(adminSidebarItems)],
   },
   {
     path: "/user",
     Component: DashboardLayout,
-    children: [{ Component: Bookings, path: "bookings" }],
+    children: [...generateRoutes(userSidebarItem)],
   },
   {
     Component: Login,
