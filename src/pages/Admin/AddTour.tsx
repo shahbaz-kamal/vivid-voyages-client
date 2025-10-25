@@ -1,4 +1,4 @@
-// import MultipleImageUploader from "@/components/MultipleImageUploader";
+import MultipleImageUploader from "@/components/MultipleImageUploader";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/select";
 
 import { Textarea } from "@/components/ui/textarea";
+import type { FileMetadata } from "@/hooks/use-file-upload";
 // import { FileMetadata } from "@/hooks/use-file-upload";
 import { cn } from "@/lib/utils";
 import { useGetDivisionsQuery } from "@/redux/features/division/division.api";
@@ -70,6 +71,7 @@ const formSchema = z.object({
 
 export default function AddTour() {
   const [images, setImages] = useState<(File | FileMetadata)[] | []>([]);
+  console.log(images)
 
   const { data: divisionData, isLoading: divisionLoading } =
     useGetDivisionsQuery(undefined);
@@ -83,7 +85,7 @@ export default function AddTour() {
     })
   );
 
-  const tourTypeOptions = tourTypeData?.data?.map(
+  const tourTypeOptions = tourTypeData?.map(
     (tourType: { _id: string; name: string }) => ({
       value: tourType._id,
       label: tourType.name,
@@ -504,7 +506,7 @@ export default function AddTour() {
                   )}
                 />
                 <div className="flex-1 mt-5">
-             
+             <MultipleImageUploader onChange={setImages}></MultipleImageUploader>
                 </div>
               </div>
               <div className="border-t border-muted w-full "></div>
