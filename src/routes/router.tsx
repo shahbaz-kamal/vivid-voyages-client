@@ -16,6 +16,10 @@ import { withAuth } from "@/utils/withAuth";
 import Unauthorized from "@/pages/Unauthorized";
 import { role } from "@/constants/role";
 import type { TRole } from "@/types";
+import Tours from "@/pages/Tours";
+import TourDetails from "@/pages/TourDetails";
+import Bookings from "@/pages/User/Bookings";
+import Homepage from "@/pages/Homepage";
 
 export const router = createBrowserRouter([
   {
@@ -23,15 +27,31 @@ export const router = createBrowserRouter([
     Component: App,
     children: [
       {
-        path: "/about",
-        Component:About,
+        Component: Homepage,
+        index: true,
+      },
+      {
+        path: "about",
+        Component: About,
+      },
+      {
+        path: "tours",
+        Component: Tours,
+      },
+      {
+        path: "tours/:id",
+        Component: TourDetails,
+      },
+      {
+        path: "booking",
+        Component: Bookings,
       },
     ],
   },
 
   {
     path: "/admin",
-    Component: withAuth(DashboardLayout,role.superAdmin as TRole),
+    Component: withAuth(DashboardLayout, role.superAdmin as TRole),
     children: [
       { index: true, element: <Navigate to="/admin/analytics"></Navigate> },
       ...generateRoutes(adminSidebarItems),
@@ -39,7 +59,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/user",
-    Component: withAuth(DashboardLayout,role.user as TRole),
+    Component: withAuth(DashboardLayout, role.user as TRole),
     children: [
       { index: true, element: <Navigate to="/user/bokings"></Navigate> },
       ...generateRoutes(userSidebarItem),
