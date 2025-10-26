@@ -5,8 +5,10 @@ import { useGetAllToursQuery } from "@/redux/features/Tour/tour.api";
 import { Link, useSearchParams } from "react-router";
 
 import TourFilters from "@/components/modules/Tours/TourFilters";
+import { useState } from "react";
 
 export default function Tours() {
+  const [selectedDivision,setSelectedDivision]=useState<string |undefined>(undefined)
   const [searchParams] = useSearchParams();
 
   const division = searchParams.get("division") || undefined;

@@ -25,6 +25,8 @@ export default function TourFilters() {
   const { data: tourTypeData, isLoading: tourTypeIsLoading } =
     useGetTourTypesQuery({ limit: 1000, fields: "_id,name" });
 
+    console.log("Tour type data",tourTypeData)
+
   const divisionOption = divisionData?.map(
     (item: { _id: string; name: string }) => ({
       label: item.name,
@@ -32,13 +34,13 @@ export default function TourFilters() {
     })
   );
 
-  const tourTypeOptions = tourTypeData?.data?.map(
+  const tourTypeOptions = tourTypeData?.map(
     (item: { _id: string; name: string }) => ({
       label: item.name,
       value: item._id,
     })
   );
-
+console.log(tourTypeOptions)
   const handleDivisionChange = (value: string) => {
     const params = new URLSearchParams(searchParams);
     params.set("division", value);

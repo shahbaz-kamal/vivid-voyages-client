@@ -43,8 +43,9 @@ export default function Booking() {
 
     try {
       const res = await createBooking(bookingData).unwrap();
+      console.log("From res",res)
       if (res.success) {
-        window.open(res.data.paymentUrl);
+        window.open(res.data.paymentURL);
       }
     } catch (err) {
       console.log(err);

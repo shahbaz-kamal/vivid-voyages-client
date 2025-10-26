@@ -7,6 +7,8 @@ export type {
   ILoginResponse,
 } from "./auth.type";
 
+export type {ITourPackage} from "./tour.type";
+
 export interface IResponse<T> {
   StatusCodes: number;
   success: boolean;
